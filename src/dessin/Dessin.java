@@ -41,10 +41,10 @@ public class Dessin {
         char p = Pep8.chari();
         int x = Pep8.deci();
         int y = Pep8.deci();
-        if (y < 0 || y > ROWS || x < 0 || x > COLUMNS) {
-            return;
+        if (x >= 0 && x <= COLUMNS && y >= 0 && y <= ROWS) {
+            caneva[x][y] = p;
         }
-        caneva[x][y] = p;
+
     }
 
     public static void rectangle() {
@@ -86,8 +86,40 @@ public class Dessin {
         }
     }
 
-    public static void ligne() {
-        return;
+    public static void segment() {
+        char peinture = Pep8.chari();
+        int x1 = Pep8.deci();
+        int y1 = Pep8.deci();
+        int x2 = Pep8.deci();
+        int y2 = Pep8.deci();
+
+        int dx = Math.abs(x2 - x1);
+        int sx = Integer.signum(x2 - x1);
+        int dy = -1 * Math.abs(y2 - y1);
+        int sy = Integer.signum(y2 - y1);
+        int err = dx + dy;
+
+        while (x1 != x2 | y1 != y2) {
+            if (x1 >= 0 && x1 <= COLUMNS && y1 >= 0 && y1 <= ROWS) {
+                caneva[x1][y1] = peinture;
+            }
+            int e2 = 2 * err;
+            if (e2 >= dy) {
+                err += dy;
+                x1 += sx;
+            }
+            if (e2 <= dx) {
+                err += dx;
+                y1 += sy;
+            }
+        }
+        if (x1 >= 0 && x1 <= COLUMNS && y1 >= 0 && y1 <= ROWS) {
+            caneva[x1][y1] = peinture;
+        }
+    }
+    
+    public static void remplir() {
+        
     }
 
     public static void command() {
@@ -114,9 +146,11 @@ public class Dessin {
             case 'r':
                 rectangle();
                 command();
+            case 'l':
+                segment();
+                command();
             case 'q':
                 stop();
-
             default:
                 break;
         }
