@@ -117,34 +117,33 @@ public class Dessin {
             caneva[x1][y1] = peinture;
         }
     }
-    
+
     public static void remplir() {
         char paint = Pep8.chari();
         int col = Pep8.deci();
         int lig = Pep8.deci();
         char oldPaint = caneva[col][lig];
-        
+
         floodFill(col, lig, paint, oldPaint);
     }
-    
-    public static void floodFill(int col, int lig, char  paint, char oldPaint){
-        if (col <0 || lig < 0 || col > COLUMNS || lig > ROWS) {
+
+    public static void floodFill(int col, int lig, char paint, char oldPaint) {
+        if (col < 0 || lig < 0 || col > COLUMNS || lig > ROWS) {
             return;
         }
-        if(oldPaint == paint){
+        if (oldPaint == paint) {
             return;
         }
-        if(caneva[col][lig] != oldPaint){
+        if (caneva[col][lig] != oldPaint) {
             return;
         }
         caneva[col][lig] = paint;
-        
+
         floodFill(col, lig - 1, paint, oldPaint);
         floodFill(col, lig + 1, paint, oldPaint);
         floodFill(col - 1, lig, paint, oldPaint);
         floodFill(col + 1, lig, paint, oldPaint);
     }
-    
 
     public static void command() {
         char c = Pep8.chari();
