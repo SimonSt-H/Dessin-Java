@@ -119,8 +119,32 @@ public class Dessin {
     }
     
     public static void remplir() {
+        char paint = Pep8.chari();
+        int col = Pep8.deci();
+        int lig = Pep8.deci();
+        char oldPaint = caneva[col][lig];
         
+        floodFill(col, lig, paint, oldPaint);
     }
+    
+    public static void floodFill(int col, int lig, char  paint, char oldPaint){
+        if (col <0 || lig < 0 || col > COLUMNS || lig > ROWS) {
+            return;
+        }
+        if(oldPaint == paint){
+            return;
+        }
+        if(caneva[col][lig] != oldPaint){
+            return;
+        }
+        caneva[col][lig] = paint;
+        
+        floodFill(col, lig - 1, paint, oldPaint);
+        floodFill(col, lig + 1, paint, oldPaint);
+        floodFill(col - 1, lig, paint, oldPaint);
+        floodFill(col + 1, lig, paint, oldPaint);
+    }
+    
 
     public static void command() {
         char c = Pep8.chari();
@@ -148,6 +172,9 @@ public class Dessin {
                 command();
             case 'l':
                 segment();
+                command();
+            case 'f':
+                remplir();
                 command();
             case 'q':
                 stop();
