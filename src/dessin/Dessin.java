@@ -2,20 +2,24 @@ package dessin;
 
 /**
  *
- * @author Simon
+ * @author Simon St-Hilaire STHS13069207    Dessin.java
  */
 public class Dessin {
 
     public static final int ROWS = 15;
     public static final int COLUMNS = 31;
 
-    public static char[][] caneva = new char[32][16];
+    public static char[][] caneva = new char[COLUMNS + 1][ROWS + 1];
 
     public static void main(String[] args) {
+        //On commence avant tout par remplir le caneva d'espaces
         clearCaneva();
         command();
     }
-
+    
+    /*
+    Cette methode met un espace dans chaque cases du caneva.
+    */
     public static void clearCaneva() {
         for (int x = 0; x <= COLUMNS; x++) {
             for (int y = 0; y <= ROWS; y++) {
@@ -23,7 +27,10 @@ public class Dessin {
             }
         }
     }
-
+    
+    /*
+    Cette methode imprime le caneva a la console.
+    */
     public static void printCaneva() {
         Pep8.stro("+--------------------------------+\n");
         for (int y = ROWS; y >= 0; y--) {
@@ -37,23 +44,35 @@ public class Dessin {
         Pep8.stro("+--------------------------------+\n");
     }
 
+    /*
+    Cette methode dessine un point.
+    */
     public static void point() {
         char p = Pep8.chari();
         int x = Pep8.deci();
         int y = Pep8.deci();
+        //On verifie que le point est dans le caneva et on le dessine.
         if (x >= 0 && x <= COLUMNS && y >= 0 && y <= ROWS) {
             caneva[x][y] = p;
         }
 
     }
-
+    
+    /*
+    Cette methode dessine un rectangle.
+    */
     public static void rectangle() {
         char frame = Pep8.chari();
         int col1 = Pep8.deci();
         int lig1 = Pep8.deci();
         int col2 = Pep8.deci();
         int lig2 = Pep8.deci();
-
+        
+        //En allant du plus petit x et y vers le plus gros x et y
+        //on n'a besoin que d'un algorithme qui va dans une direction.
+        //On passe ensuite sur chaque case du rectangle et si la case est
+        //dans le caneva on verifie si la case forme le cadre du rectangle en
+        //verifiant si (x = col1 ou col2) ou si (y = lig1 ou lig2).
         for (int x = Math.min(col1, col2); x <= Math.max(col1, col2); x++) {
             for (int y = Math.min(lig1, lig2); y <= Math.max(lig1, lig2); y++) {
                 if (x >= 0 && x <= COLUMNS && y >= 0 && y <= ROWS) {
@@ -64,7 +83,10 @@ public class Dessin {
             }
         }
     }
-
+    
+    /*
+    Cette methode dessine un rectangle rempli.
+    */
     public static void boite() {
         char frame = Pep8.chari();
         char filling = Pep8.chari();
@@ -72,7 +94,13 @@ public class Dessin {
         int lig1 = Pep8.deci();
         int col2 = Pep8.deci();
         int lig2 = Pep8.deci();
-
+        
+        //Il s'agit exactement du même algorithme que pour le rectangle vide
+        //avec une ligne de code de plus qui remplit les cases qui ne rencontre
+        //pas la condition de faire partie du cadre avec le caractere
+        //filling. Puisqu'on passe deja sur toutes les cases interieures du
+        //rectangles avec l'algorithme precedent il n'y a presque aucun
+        //changements.
         for (int x = Math.min(col1, col2); x <= Math.max(col1, col2); x++) {
             for (int y = Math.min(lig1, lig2); y <= Math.max(lig1, lig2); y++) {
                 if (x >= 0 && x <= COLUMNS && y >= 0 && y <= ROWS) {
@@ -85,14 +113,18 @@ public class Dessin {
             }
         }
     }
-
+    /*
+    Cette methode dessine un segment.
+    */
     public static void segment() {
         char peinture = Pep8.chari();
         int x1 = Pep8.deci();
         int y1 = Pep8.deci();
         int x2 = Pep8.deci();
         int y2 = Pep8.deci();
-
+        
+        //Je n'ai qu'applique le pseudo-code de l'enonce en ajoutant la
+        //verification que la case est dans le caneva avant de le dessiner.
         int dx = Math.abs(x2 - x1);
         int sx = Integer.signum(x2 - x1);
         int dy = -1 * Math.abs(y2 - y1);
@@ -117,7 +149,9 @@ public class Dessin {
             caneva[x1][y1] = peinture;
         }
     }
-
+    /*
+    Cette methode prend les input et appelle la methode floodFill.
+    */
     public static void remplir() {
         char paint = Pep8.chari();
         int col = Pep8.deci();
@@ -127,25 +161,41 @@ public class Dessin {
         floodFill(col, lig, paint, oldPaint);
     }
 
+    /*
+    Cette methode remplit une zone avec un nouveau caractere.
+    */
     public static void floodFill(int col, int lig, char paint, char oldPaint) {
+        //Si le point actif n'est pas dans le caneva, on sort.
         if (col < 0 || lig < 0 || col > COLUMNS || lig > ROWS) {
             return;
         }
+        //Si le point actif a deja la couleur voulue, on sort.
         if (oldPaint == paint) {
             return;
         }
+        //Si le point actif ne partage pas la couleur du point initial, on sort.
         if (caneva[col][lig] != oldPaint) {
             return;
         }
+        //Si on s'est rendu jusqu'ici, on peinture avec la nouvelle couleur.
         caneva[col][lig] = paint;
-
+        
+        //On fait la même chose pour les 4 cases voisines de façon recursive
+        //jusqu'a ce qu'on arrive a une case dont les 4 voisins ne rencontre
+        //rencontre les conditions d'un des 3 if du debut de la methode.
         floodFill(col, lig - 1, paint, oldPaint);
         floodFill(col, lig + 1, paint, oldPaint);
         floodFill(col - 1, lig, paint, oldPaint);
         floodFill(col + 1, lig, paint, oldPaint);
     }
-
+    
+    /*
+    Cette methode determine quel methode appeler et l'appelle.
+    */
     public static void command() {
+        //Ces 3 lignes de code sont tres importantes, j'ai perdu 80% dans
+        //le TP1 parce que j'avais mal fait la boucle pour ignorer les sauts
+        //de ligne et les espaces.
         char c = Pep8.chari();
         while (c == '\n' || c == ' ') {
             c = Pep8.chari();
@@ -181,7 +231,9 @@ public class Dessin {
                 break;
         }
     }
-
+    /*
+    Stop.
+    */
     public static void stop() {
         Pep8.stop();
     }
